@@ -48,7 +48,7 @@ class QueryInfo {
   factory QueryInfo.fromJson(Map<String, dynamic> json) => QueryInfo(
         count: json["count"],
         pages: json["pages"],
-        next: json["next"],
+        next: json["next"] ?? '',
         prev: json["prev"],
       );
 

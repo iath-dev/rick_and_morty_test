@@ -22,7 +22,7 @@ class _CharacterGridState extends State<CharacterGrid> {
   void initState() {
     super.initState();
 
-    _scrollController = ScrollController(initialScrollOffset: 5.0)
+    _scrollController = ScrollController(initialScrollOffset: 0.0)
       ..addListener(_scrollListener);
   }
 

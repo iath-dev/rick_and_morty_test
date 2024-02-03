@@ -19,7 +19,7 @@ class CharactersCubit extends Cubit<CharactersState> {
       emit(
           CharactersLoaded(characters: [...state.characters, ...data.results]));
 
-      if (data.info.next.isNotEmpty) {
+      if (data.info.next.isEmpty) {
         page++;
       }
     }

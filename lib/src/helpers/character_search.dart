@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:rick_and_morty_test/src/services/api_service.dart';
 import 'package:rick_and_morty_test/src/widgets/characters_grid.dart';
@@ -25,10 +27,29 @@ class CharacterSearchDelegate extends SearchDelegate {
       return const _EmptyContainer();
     }
 
+    log(query);
+
     return FutureBuilder(
         future: service.searchCharacter(query),
         builder: (context, snapshot) {
-          if (snapshot.data != null) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+                child: Column(children: [
+              const Icon(Icons.error, color: Colors.red),
+              Text('Error: ${snapshot.error}')
+            ]));
+          } else if (!snapshot.hasData || snapshot.data!.results.isEmpty) {
+            return Center(
+              child: Column(
+                children: [
+                  const Icon(Icons.search_off),
+                  Text('Not result found for $query')
+                ],
+              ),
+            );
+          } else {
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: CharacterGrid(
@@ -36,8 +57,6 @@ class CharacterSearchDelegate extends SearchDelegate {
                 characters: snapshot.data!.results,
               ),
             );
-          } else {
-            return const _EmptyContainer();
           }
         });
   }
