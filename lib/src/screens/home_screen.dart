@@ -47,11 +47,11 @@ class HomeScreen extends StatelessWidget {
                       return CharacterGrid(
                         tag: 'home',
                         characters: state.characters,
-                        onLoad: () =>
-                            context.read<CharactersCubit>().loadCharacters(),
+                        onLoad: () => BlocProvider.of<CharactersCubit>(context)
+                            .loadCharacters(),
                       );
                     } else {
-                      return const Center(child: CircularProgressIndicator());
+                      return const GridViewSkeleton();
                     }
                   },
                 ),

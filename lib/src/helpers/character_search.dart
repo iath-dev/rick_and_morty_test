@@ -34,8 +34,10 @@ class CharacterSearchDelegate extends SearchDelegate {
     return BlocBuilder<SearchBloc, SearchState>(
       builder: (context, state) {
         if (state is SearchLoading) {
-          return const _EmptyContainer(
-              label: 'Loading...', child: CircularProgressIndicator());
+          return const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: GridViewSkeleton(),
+          );
         } else if (state is SearchError) {
           return _EmptyContainer(
               label: 'Error: ${state.msg}',

@@ -1,6 +1,6 @@
 ![Rick&Morty](assets/rick_and_morty.png)
 
-# Rickster - Biblioteca de los personajes de Rick & Morty
+# Rickster - Documentación
 
 Esta aplicación le permite al usuario ver los personajes de la serie de Rick & Morty, esta información es proviene de una [API](https://rickandmortyapi.com/documentation) gratuita.
 

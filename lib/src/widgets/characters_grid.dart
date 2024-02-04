@@ -35,18 +35,23 @@ class _CharacterGridState extends State<CharacterGrid> {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      controller: _scrollController,
-      physics: const BouncingScrollPhysics(),
-      itemCount: widget.characters.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          childAspectRatio: .9,
-          crossAxisSpacing: 8.0,
-          mainAxisSpacing: 8.0),
-      itemBuilder: (context, index) => CharacterAvatar(
-        tag: widget.tag,
-        data: widget.characters[index],
+    return Scrollbar(
+      interactive: false,
+      radius: const Radius.circular(4.0),
+      thickness: .5,
+      child: GridView.builder(
+        controller: _scrollController,
+        physics: const BouncingScrollPhysics(),
+        itemCount: widget.characters.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            childAspectRatio: .9,
+            crossAxisSpacing: 8.0,
+            mainAxisSpacing: 8.0),
+        itemBuilder: (context, index) => CharacterAvatar(
+          tag: widget.tag,
+          data: widget.characters[index],
+        ),
       ),
     );
   }
