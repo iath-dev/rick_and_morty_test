@@ -1,8 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:rick_and_morty_test/src/services/api_service.dart';
-import 'package:rick_and_morty_test/src/widgets/characters_grid.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rick_and_morty_test/src/bloc/bloc.dart';
+import 'package:rick_and_morty_test/src/services/services.dart';
+import 'package:rick_and_morty_test/src/widgets/widgets.dart';
 
 class CharacterSearchDelegate extends SearchDelegate {
   ApiService service = ApiService();
@@ -27,56 +27,90 @@ class CharacterSearchDelegate extends SearchDelegate {
       return const _EmptyContainer();
     }
 
-    log(query);
+    final provider = BlocProvider.of<SearchBloc>(context);
+
+    provider.add(LoadCharacters(query: query));
+
+    return BlocBuilder<SearchBloc, SearchState>(
+      builder: (context, state) {
+        if (state is SearchLoading) {
+          return const _EmptyContainer(
+              label: 'Loading...', child: CircularProgressIndicator());
+        } else if (state is SearchError) {
+          return _EmptyContainer(
+              label: 'Error: ${state.msg}',
+              child: const Icon(Icons.error, color: Colors.red));
+        } else if (state is SearchLoaded && state.characters.isEmpty) {
+          return _EmptyContainer(
+              label: 'Not result found for $query',
+              child: const Icon(Icons.search_off));
+        } else {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: CharacterGrid(
+              tag: 'search',
+              characters: state.characters,
+              onLoad: () => provider.add(LoadMore()),
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    if (query.isEmpty) {
+      return const _EmptyContainer();
+    }
 
     return FutureBuilder(
         future: service.searchCharacter(query),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const _EmptyContainer(
+                label: 'Loading...', child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(
-                child: Column(children: [
-              const Icon(Icons.error, color: Colors.red),
-              Text('Error: ${snapshot.error}')
-            ]));
+            return _EmptyContainer(
+                label: 'Error: ${snapshot.error}',
+                child: const Icon(Icons.error, color: Colors.red));
           } else if (!snapshot.hasData || snapshot.data!.results.isEmpty) {
-            return Center(
-              child: Column(
-                children: [
-                  const Icon(Icons.search_off),
-                  Text('Not result found for $query')
-                ],
-              ),
-            );
+            return _EmptyContainer(
+                label: 'Not result found for $query',
+                child: const Icon(Icons.search_off));
           } else {
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: CharacterGrid(
-                tag: 'search',
-                characters: snapshot.data!.results,
+            return ListView.builder(
+              itemCount: snapshot.data!.results.length,
+              itemBuilder: (context, index) => ListTile(
+                dense: true,
+                onTap: () => query = snapshot.data!.results[index].name,
+                title: Text(snapshot.data!.results[index].name),
+                subtitle: Text(snapshot.data!.results[index].location.name),
               ),
             );
           }
         });
   }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    return const _EmptyContainer();
-  }
 }
 
 class _EmptyContainer extends StatelessWidget {
-  const _EmptyContainer();
+  const _EmptyContainer(
+      {this.child = const Icon(Icons.live_tv_rounded, size: 100),
+      this.label = ""});
+
+  final Widget child;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Icon(
-        Icons.live_tv_rounded,
-        // color: Colors.black38,
-        size: 100,
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          child,
+          const SizedBox(height: 16.0),
+          Text(label, style: Theme.of(context).textTheme.titleSmall)
+        ],
       ),
     );
   }

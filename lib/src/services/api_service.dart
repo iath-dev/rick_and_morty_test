@@ -18,8 +18,9 @@ class ApiService {
     return null;
   }
 
-  Future<RickMortyCharactersQuery?> searchCharacter(String name) async {
-    final Map<String, dynamic> params = {"name": name};
+  Future<RickMortyCharactersQuery?> searchCharacter(String name,
+      [int page = 1]) async {
+    final Map<String, dynamic> params = {"name": name, "page": page.toString()};
 
     final url = Uri.https(_api, 'api/character', params);
     final res = await http.get(url);

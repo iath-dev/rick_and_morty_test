@@ -1,6 +1,6 @@
-import 'package:rick_and_morty_test/src/models/models.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rick_and_morty_test/src/services/api_service.dart';
+import 'package:rick_and_morty_test/src/models/models.dart';
+import 'package:rick_and_morty_test/src/services/services.dart';
 
 part 'characters_state.dart';
 
@@ -19,7 +19,7 @@ class CharactersCubit extends Cubit<CharactersState> {
       emit(
           CharactersLoaded(characters: [...state.characters, ...data.results]));
 
-      if (data.info.next.isEmpty) {
+      if (data.info.next.isNotEmpty) {
         page++;
       }
     }
